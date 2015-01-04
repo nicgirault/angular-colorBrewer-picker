@@ -1,7 +1,7 @@
 .palette {
   cursor: pointer;
   display: inline-block;
-  margin: 4px 0 4px 6px;
+  margin: 4px 4px 4px 6px;
   padding: 4px 4px 0px 4px;
   background: #fff;
   border: solid 1px #aaa;
@@ -9,12 +9,27 @@
 .palette-selector .palette {
   padding: 4px 15px 0px 4px;
 }
-/* downward pointing arrow */
+.palette-selector {
+  display: inline-block;
+  background-color: #fff;
+  z-index: 999;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.175);
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.175);
+}
 .palette-selector .caret {
   margin-left: -12px;
   margin-top: -10px;
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 2px;
+  vertical-align: middle;
+  border-top: 4px solid;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
 }
-/* the main checkboxes and helper layer */
 .color-brewer-container {
   background-color: #fff;
   position: absolute;
@@ -25,7 +40,6 @@
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
   min-width: 278px;
 }
-/* item labels focus on mouse hover */
 .color-brewer-container .palette:hover {
   background-color: #ccc;
   cursor: pointer;
