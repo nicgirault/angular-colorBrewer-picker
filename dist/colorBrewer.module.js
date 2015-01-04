@@ -50,7 +50,7 @@
         size: '@cbSize',
         horizontal: '=cbHorizontal'
       },
-      template: '<div class=\'palette-selector\' \n  ng-click=\'toggleList()\'\n>\n  <color-brewer-palette \n    cb-palette=\'selectedPalette\'\n    cb-horizontal=\'true\'\n    cb-size=\'20\'\n    cb-range=\'selectedPalette.length\'\n    class=\'palette\'\n  />\n  <span class=\'caret\'></span>\n</div>\n\n<color-brewer-picker \n  cb-picker-callback=\'callback(paletteName, palette)\'\n  cb-horizontal=\'true\'\n  cb-size=\'20\'\n  ng-show=\'showList\'\n/>',
+      template: '<div class=\'palette-selector\' \n  ng-click=\'toggleList()\'\n>\n  <color-brewer-palette \n    cb-palette=\'selectedPalette\'\n    cb-horizontal=\'true\'\n    cb-size=\'20\'\n    cb-range=\'selectedPalette.length\'\n    class=\'palette\'\n  ></color-brewer-palette>\n  <span class=\'caret\'></span>\n</div>\n\n<color-brewer-picker \n  cb-picker-callback=\'callback(paletteName, palette)\'\n  cb-horizontal=\'true\'\n  cb-size=\'20\'\n  ng-show=\'showList\'\n/>',
       link: function(scope) {
         scope.selectedPalette = [];
         scope.callback = function(paletteName, palette) {

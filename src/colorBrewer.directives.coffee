@@ -74,7 +74,7 @@ do(angular) ->
           cb-size='20'
           cb-range='selectedPalette.length'
           class='palette'
-        />
+        ></color-brewer-palette>
         <span class='caret'></span>
       </div>
 
