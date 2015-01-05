@@ -89,6 +89,23 @@
 
 },{}],2:[function(require,module,exports){
 (function(angular) {
+  return angular.module('colorBrewer').filter('cbExist', function(colorBrewer) {
+    return function(input, range) {
+      var name, out, palette;
+      out = {};
+      for (name in input) {
+        palette = input[name];
+        if (colorBrewer[name][range] != null) {
+          out[name] = palette;
+        }
+      }
+      return out;
+    };
+  });
+})(angular);
+
+},{}],3:[function(require,module,exports){
+(function(angular) {
   return angular.module('colorBrewer').factory('colorBrewer', function() {
     return {
       YlGn: {
@@ -430,11 +447,12 @@
   });
 })(angular);
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 (function(angular) {
   angular.module('colorBrewer', []);
   require('./colorBrewer.directives.js');
   require('./colorBrewer.service.js');
+  require('./colorBrewer.filter.js');
 })(angular);
 
-},{"./colorBrewer.directives.js":1,"./colorBrewer.service.js":2}]},{},[3])
+},{"./colorBrewer.directives.js":1,"./colorBrewer.filter.js":2,"./colorBrewer.service.js":3}]},{},[4])
