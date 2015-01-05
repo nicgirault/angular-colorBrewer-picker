@@ -1,14 +1,3 @@
-.palette {
-  cursor: pointer;
-  display: inline-block;
-  margin: 4px 4px 4px 6px;
-  padding: 4px 4px 0px 4px;
-  background: #fff;
-  border: solid 1px #aaa;
-}
-.palette-selector .palette {
-  padding: 4px 15px 0px 4px;
-}
 .palette-selector {
   display: inline-block;
   background-color: #fff;
@@ -17,18 +6,25 @@
   border-radius: 4px;
   -webkit-box-shadow: 0 2px 2px rgba(0, 0, 0, 0.175);
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.175);
-}
-.palette-selector .caret {
-  margin-left: -12px;
-  margin-top: -10px;
-  display: inline-block;
-  width: 0;
-  height: 0;
-  margin-left: 2px;
-  vertical-align: middle;
-  border-top: 4px solid;
-  border-right: 4px solid transparent;
-  border-left: 4px solid transparent;
+  .caret {
+    margin-left: -12px !important;
+    margin-top: -10px;
+    display: inline-block;
+    width: 0;
+    height: 0;
+    margin-left: 2px;
+    vertical-align: middle;
+    border-top: 4px solid;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+  }
+  .palette {
+    cursor: pointer;
+    display: inline-block;
+    margin: 4px 4px 4px 6px;
+    padding: 4px 4px 0px 4px;
+    border: none;
+  }
 }
 
 .color-brewer-container {
@@ -39,10 +35,25 @@
   border-radius: 4px;
   -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-  min-width: 278px;
-}
+  max-height: 200px;
+  overflow-y: scroll;
 
-.color-brewer-container .palette:hover {
-  background-color: #ccc;
-  cursor: pointer;
+  .palette {
+    cursor: pointer;
+    display: inline-block;
+    margin: 4px 4px 4px 6px;
+    padding: 4px 4px 0px 4px;
+    background: #fff;
+    border: solid 1px #aaa;
+  }
+  .palette:hover {
+    background-color: #ccc;
+    cursor: pointer;
+  }
+  ul {
+    padding-left: 0;
+  }
+  li {
+    list-style-type: none;
+  }
 }
