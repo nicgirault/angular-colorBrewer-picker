@@ -1,17 +1,27 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function(angular) {
-  angular.module('colorBrewer').directive('colorBrewerPalette', function() {
+  angular.module('colorBrewer').directive('colorBrewerPalette', function(colorBrewer) {
     return {
       restrict: 'E',
       scope: {
-        palette: '=cbPalette',
-        size: '=cbSize',
-        horizontal: '=cbHorizontal',
-        range: '=cbRange'
+        paletteName: '@cbPaletteName',
+        size: '@cbSize',
+        horizontal: '@cbHorizontal',
+        range: '@cbRange',
+        isReverse: '@cbReverse'
       },
       template: '<svg \n  ng-attr-width=\'{{ horizontal ? size * range : size }}\' \n  ng-attr-height=\'{{ horizontal ? size : size * range }}\'\n>\n  <rect\n    ng-repeat=\'color in palette\' \n    ng-attr-fill=\'{{ color }}\' \n    ng-attr-width=\'{{ size }}\' \n    ng-attr-height=\'{{ size }}\' \n    ng-attr-x=\'{{ horizontal ? $index * size : 0 }}\' \n    ng-attr-y=\'{{ horizontal ? 0 : $index * size }}\' \n    title=\'{{ color }}\' \n  />\n</svg>',
-      link: function(scope) {
-        scope.range = scope.range != null ? scope.range : 0;
+      link: function(scope, e, attributes) {
+        scope.$watch('paletteName', function(value) {
+          return scope.palette = colorBrewer[value][scope.range].reverse(scope.isReverse);
+        });
+        scope.$watch('isReverse', function(value) {
+          return scope.palette = colorBrewer[scope.paletteName][scope.range].reverse(value);
+        });
+        scope.$watch('range', function(value) {
+          scope.range = value;
+          return scope.palette = colorBrewer[scope.paletteName][value].reverse(scope.isReverse);
+        });
         scope.size = scope.size != null ? scope.size : 20;
         return scope.horizontal = scope.horizontal != null ? scope.horizontal : true;
       }
@@ -23,11 +33,16 @@
       scope: {
         callback: '&cbPickerCallback',
         size: '@cbSize',
-        horizontal: '=cbHorizontal'
+        horizontal: '=cbHorizontal',
+        range: '@cbRange'
       },
-      template: '<div class=\'color-brewer-container\'>\n  <color-brewer-palette \n    ng-repeat=\'(name, palette) in palettes\'\n    cb-palette=\'palette\'\n    cb-horizontal=\'horizontal\'\n    cb-size=\'size\'\n    cb-range=\'palette.length\'\n    class=\'palette\'\n    ng-click=\'callback({paletteName: name, palette: palette})\'\n  />\n</div>',
+      template: '<div class=\'color-brewer-container\'>\n  Range: <select ng-options=\'value for value in [3,4,5,6,7,8,9,10,11,12]\' ng-model=\'range\'></select><br />\n  Reverse: <input type=\'checkbox\' ng-model=\'isReverse\'>\n  <ul>\n    <li ng-repeat=\'(name, palette) in palettes | cbExist:range \'>\n      <color-brewer-palette \n        cb-palette-name=\'{{ name }}\'\n        cb-horizontal=\'{{ true }}\'\n        cb-size=\'{{ size }}\'\n        cb-range=\'{{ range }}\'\n        cb-reverse=\'{{ isReverse }}\'\n        class=\'palette\'\n        ng-click=\'callback({paletteName: name, range: range, palette: palette})\'\n      />\n    </li>\n  </ul>\n</div>',
       link: function(scope, element) {
         var k, key, palette, palettes, _i;
+        scope.isReverse = false;
+        scope.$watch('range', function(value) {
+          return scope.range = parseInt(value);
+        });
         palettes = {};
         for (key in colorBrewer) {
           palette = colorBrewer[key];
@@ -48,17 +63,19 @@
       scope: {
         parentCallback: '&cbPickerCallback',
         size: '@cbSize',
-        horizontal: '=cbHorizontal'
+        selectedPalette: '@cbInitialPaletteName',
+        selectedRange: '@cbInitialRange'
       },
-      template: '<div class=\'palette-selector\' \n  ng-click=\'toggleList()\'\n>\n  <color-brewer-palette \n    cb-palette=\'selectedPalette\'\n    cb-horizontal=\'true\'\n    cb-size=\'20\'\n    cb-range=\'selectedPalette.length\'\n    class=\'palette\'\n  ></color-brewer-palette>\n  <span class=\'caret\'></span>\n</div>\n\n<color-brewer-picker \n  cb-picker-callback=\'callback(paletteName, palette)\'\n  cb-horizontal=\'true\'\n  cb-size=\'20\'\n  ng-show=\'showList\'\n/>',
+      template: '<div class=\'palette-selector\' \n  ng-click=\'toggleList()\'\n>\n  <color-brewer-palette \n    cb-palette-name=\'{{ selectedPalette }}\'\n    cb-horizontal=\'{{ true }}\'\n    cb-size=\'{{ 20 }}\'\n    cb-range=\'{{ selectedRange }}\'\n    class=\'palette\'\n  ></color-brewer-palette>\n  <span class=\'caret\'></span>\n</div>\n\n<color-brewer-picker \n  cb-picker-callback=\'callback(paletteName, range, palette)\'\n  cb-horizontal=\'true\'\n  cb-size=\'20\'\n  cb-range=\'{{ selectedRange }}\'\n  cb-reverse=\'{{ false }}\'\n  ng-show=\'showList\'\n/>',
       link: function(scope) {
-        scope.selectedPalette = [];
-        scope.callback = function(paletteName, palette) {
+        scope.callback = function(paletteName, range, palette) {
           scope.parentCallback({
             paletteName: paletteName,
+            range: range,
             palette: palette
           });
-          scope.selectedPalette = palette;
+          scope.selectedPalette = paletteName;
+          scope.selectedRange = range;
           return scope.showList = false;
         };
         scope.showList = false;
