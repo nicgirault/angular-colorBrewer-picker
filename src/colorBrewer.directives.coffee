@@ -1,12 +1,12 @@
 do(angular) ->
   # a palette
-  angular.module('colorBrewer').directive 'colorBrewerPalette', ->
+  angular.module('colorBrewer').directive 'colorBrewerPalette', (colorBrewer) ->
     restrict: 'E'
     scope:
-      palette: '=cbPalette'
-      size: '=cbSize'
-      horizontal: '=cbHorizontal'
-      range: '=cbRange'
+      paletteName: '@cbPaletteName'
+      size: '@cbSize'
+      horizontal: '@cbHorizontal'
+      range: '@cbRange'
     template: '''
       <svg 
         ng-attr-width='{{ horizontal ? size * range : size }}' 
@@ -23,8 +23,14 @@ do(angular) ->
         />
       </svg>
     '''
-    link: (scope) ->
-      scope.range = if scope.range? then scope.range else 0
+    link: (scope,e,attributes) ->
+      scope.$watch 'paletteName', (value) ->
+        scope.palette = colorBrewer[scope.paletteName][scope.range]
+
+      # scope.$watch 'range', (value) ->
+      #   console.log value
+      
+      # scope.range = if scope.range? then scope.range else 0
       scope.size = if scope.size? then scope.size else 20
       scope.horizontal = if scope.horizontal? then scope.horizontal else true
 
@@ -39,10 +45,10 @@ do(angular) ->
       <div class='color-brewer-container'>
         <color-brewer-palette 
           ng-repeat='(name, palette) in palettes'
-          cb-palette='palette'
-          cb-horizontal='horizontal'
-          cb-size='size'
-          cb-range='palette.length'
+          cb-palette-name='{{ name }}'
+          cb-horizontal='{{ true }}'
+          cb-size='{{ size }}'
+          cb-range='{{ palette.length }}'
           class='palette'
           ng-click='callback({paletteName: name, palette: palette})'
         />
@@ -63,34 +69,33 @@ do(angular) ->
     scope:
       parentCallback: '&cbPickerCallback'
       size: '@cbSize'
-      horizontal: '=cbHorizontal'
+      selectedPalette: '@cbInitialPaletteName'
+      selectedRange: '@cbInitialRange'
     template: '''
       <div class='palette-selector' 
         ng-click='toggleList()'
       >
         <color-brewer-palette 
-          cb-palette='selectedPalette'
-          cb-horizontal='true'
-          cb-size='20'
-          cb-range='selectedPalette.length'
+          cb-palette-name='{{ selectedPalette }}'
+          cb-horizontal='{{ true }}'
+          cb-size='{{ 20 }}'
+          cb-range='{{ selectedRange }}'
           class='palette'
         ></color-brewer-palette>
         <span class='caret'></span>
       </div>
 
       <color-brewer-picker 
-        cb-picker-callback='callback(paletteName, palette)'
+        cb-picker-callback='callback(paletteName, selectedRange, palette)'
         cb-horizontal='true'
         cb-size='20'
         ng-show='showList'
       />
     '''
     link: (scope) ->
-      scope.selectedPalette = []
-
-      scope.callback = (paletteName, palette) ->
-        scope.parentCallback({paletteName: paletteName, palette: palette})
-        scope.selectedPalette = palette
+      scope.callback = (paletteName, range, palette) ->
+        scope.selectedPalette = paletteName
+        scope.parentCallback({paletteName: paletteName, range: range, palette: palette})
         scope.showList = false
 
       scope.showList = false
