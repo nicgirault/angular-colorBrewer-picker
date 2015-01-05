@@ -1,4 +1,4 @@
-angular-colorBrewer-selector
+angular-colorBrewer-picker
 ============================
 
 An Angular stand-alone module to select a [color Brewer](http://colorbrewer2.org/) palette.
