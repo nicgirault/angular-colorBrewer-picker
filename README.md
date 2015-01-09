@@ -1,9 +1,9 @@
-angular-colorBrewer-selector
+angular-colorBrewer-picker
 ============================
 
 An Angular stand-alone module to select a [color Brewer](http://colorbrewer2.org/) palette.
 
-Demo: [http://jsfiddle.net/nicgirault/co0eLnqf/21/](http://jsfiddle.net/nicgirault/co0eLnqf/21/)
+Demo: [http://jsfiddle.net/nicgirault/bqph3pkL/](http://jsfiddle.net/nicgirault/bqph3pkL/)
 
 Two directives can be used:
 
