@@ -59,7 +59,7 @@ do(angular) ->
               cb-range='{{ range }}'
               cb-reverse='{{ isReverse }}'
               class='palette'
-              ng-click='callback({paletteName: name, range: range, palette: palette})'
+              ng-click='callback({paletteName: name, range: range, palette: palette[range]})'
             />
           </li>
         </ul>
@@ -69,14 +69,7 @@ do(angular) ->
       scope.isReverse = false
       scope.$watch 'range', (value) ->
         scope.range = parseInt value
-
-      palettes = {}
-      for key, palette of colorBrewer
-        for k in [12..3]
-          if palette[k]?
-            palettes[ key ] = palette[k]
-            break
-      scope.palettes = palettes
+      scope.palettes = colorBrewer
 
   # a button to toggle the display of all the palettes
   angular.module('colorBrewer').directive 'colorBrewerPickerSelect', ->
