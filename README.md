@@ -28,6 +28,7 @@ Two directives can be used:
 
 TODO:
 -----
+- Use ng-model and ng-change
 - Add isReverse in callback
 - Debug reverse behavior before selecting a range
 - Improve css
