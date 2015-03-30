@@ -3,6 +3,6 @@ ui-select(
   style="width: 300px;"
 )
   ui-select-match(placeholder="Select a palette...")
-    palette(colors='selectedPalette.range[range]' size='20')
-  ui-select-choices(repeat='palette in palettes')
-    palette(colors='palette.range[range]' size='20')
+    palette(colors='selectedPalette' size='20')
+  ui-select-choices(repeat='palette in palettes' refresh="refreshPalettes($select.search)")
+    palette(colors='palette' size='20')

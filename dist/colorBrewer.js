@@ -6,8 +6,29 @@ angular.module('colorBrewer').directive('palettePicker', function(colorBrewer) {
     templateUrl: 'templates/palette-picker.html',
     link: function(scope) {
       scope.palettes = colorBrewer;
-      return scope.range = 9;
+      scope.range = 9;
+      return scope.refreshPalettes = function(range) {
+        return scope.palettes = colorBrewer.filter(function(palette) {
+          return palette.range[range] != null;
+        }).map(function(palette) {
+          return palette.range[range];
+        });
+      };
     }
+  };
+});
+
+angular.module('colorBrewer').filter('cbExist', function() {
+  return function(colorBrewer, range) {
+    var i, len, out, palette;
+    out = [];
+    for (i = 0, len = colorBrewer.length; i < len; i++) {
+      palette = colorBrewer[i];
+      if (palette.range[range] != null) {
+        out.push(palette);
+      }
+    }
+    return out;
   };
 });
 
