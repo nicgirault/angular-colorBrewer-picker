@@ -1,0 +1,12 @@
+<div class="ui-select-container ui-select-bootstrap dropdown" ng-class="{open: $select.open}">
+  <div class="ui-select-match"></div>
+  <input class="ui-select-range" type="range" min=0 max=12 step=1
+     ng-model="$select.range"
+     ng-show="$select.open"
+  />
+  <input class="ui-select-reverse" type="checkbox"
+     ng-model="$select.reverse"
+     ng-show="$select.open"
+  />
+  <div class="ui-select-choices"></div>
+</div>
