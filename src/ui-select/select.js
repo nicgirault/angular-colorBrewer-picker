@@ -5,10 +5,6 @@
  * License: MIT
  */
 
-
-(function () {
-"use strict";
-
 if (angular.element.prototype.querySelectorAll === undefined) {
   angular.element.prototype.querySelectorAll = function(selector) {
     return angular.element(this[0].querySelectorAll(selector));
@@ -17,11 +13,9 @@ if (angular.element.prototype.querySelectorAll === undefined) {
 
 var latestId = 0;
 
-var uis = angular.module('ui.select', [])
+var uis = angular.module('colorBrewer')
 
 .constant('uiSelectConfig', {
-  theme: 'bootstrap',
-  sortable: false,
   placeholder: '', // Empty by default, like HTML tag <select>
   closeOnSelect: true,
   generateId: function() {
@@ -71,7 +65,7 @@ uis.directive('uiSelectChoices',
     require: '^uiSelect',
     replace: true,
     transclude: true,
-    templateUrl:'bootstrap/choices.tpl.html',
+    templateUrl:'choices.tpl.html',
     compile: function(tElement, tAttrs) {
 
       return function link(scope, element, attrs, $select, transcludeFn) {
@@ -101,6 +95,10 @@ uis.directive('uiSelectChoices',
           $select.refresh(attrs.refresh);
         });
 
+        scope.$watch('$select.reverse', function(newValue) {
+          $select.reversePalettes(attrs.reverse);
+        });
+
       };
     }
   };
@@ -120,10 +118,10 @@ uis.controller('uiSelectCtrl',
   var EMPTY_SEARCH = 3;
 
   ctrl.placeholder = uiSelectConfig.placeholder;
-  ctrl.sortable = uiSelectConfig.sortable;
 
   ctrl.closeOnSelect = true; //Initialized inside uiSelect directive link function
   ctrl.search = EMPTY_SEARCH;
+  ctrl.reverse = false;
 
   ctrl.activeIndex = 0; //Dropdown of choices
   ctrl.items = []; //All available choices
@@ -226,6 +224,12 @@ uis.controller('uiSelectCtrl',
   ctrl.refresh = function(refreshAttr) {
     if (refreshAttr !== undefined) {
       $scope.$eval(refreshAttr);
+    }
+  };
+
+  ctrl.reversePalettes = function(reverseAttr) {
+    if (reverseAttr !== undefined) {
+      $scope.$eval(reverseAttr);
     }
   };
 
@@ -342,7 +346,7 @@ uis.directive('uiSelect',
 
   return {
     restrict: 'EA',
-    templateUrl: '../bower_components/angular-ui-select/dist/test.html',
+    templateUrl: 'select.tpl.html',
     replace: true,
     transclude: true,
     require: ['uiSelect', '^ngModel'],
@@ -516,11 +520,7 @@ uis.directive('uiSelectMatch', ['uiSelectConfig', function(uiSelectConfig) {
     require: '^uiSelect',
     replace: true,
     transclude: true,
-    templateUrl: function(tElement) {
-      // Gets theme attribute from parent (ui-select)
-      var theme = tElement.parent().attr('theme') || uiSelectConfig.theme;
-      return theme + '/match.tpl.html';
-    },
+    templateUrl: 'match.tpl.html',
     link: function(scope, element, attrs, $select) {
       $select.lockChoiceExpression = attrs.uiLockChoice;
       attrs.$observe('placeholder', function(placeholder) {
@@ -558,7 +558,7 @@ uis.directive('uiSelectSingle', ['$timeout','$compile', function($timeout, $comp
 
       //From model --> view
       ngModel.$formatters.unshift(function (inputValue) {
-        var data = $select.parserResult.source (scope, { $select : {search:''}}), //Overwrite $search
+        var data = $select.parserResult.source (scope, { $select : {search:'', reverse: false}}), //Overwrite $search
             locals = {},
             result;
         if (data){
@@ -672,8 +672,3 @@ uis.service('uisRepeatParser', ['$parse', function($parse) {
     return expression;
   };
 }]);
-
-}());
-angular.module("ui.select").run(["$templateCache", function($templateCache) {$templateCache.put("bootstrap/choices.tpl.html","<ul class=\"ui-select-choices ui-select-choices-content dropdown-menu\" role=\"listbox\" ng-show=\"$select.items.length > 0\"><li class=\"ui-select-choices-group\" id=\"ui-select-choices-{{ $select.generatedId }}\"><div class=\"divider\" ng-show=\"$select.isGrouped && $index > 0\"></div><div ng-show=\"$select.isGrouped\" class=\"ui-select-choices-group-label dropdown-header\" ng-bind=\"$group.name\"></div><div id=\"ui-select-choices-row-{{ $select.generatedId }}-{{$index}}\" class=\"ui-select-choices-row\" ng-class=\"{active: $select.isActive(this), disabled: $select.isDisabled(this)}\" role=\"option\"><a href=\"javascript:void(0)\" class=\"ui-select-choices-row-inner\"></a></div></li></ul>");
-$templateCache.put("bootstrap/match.tpl.html","<div class=\"ui-select-match\" ng-hide=\"$select.open\" ng-disabled=\"$select.disabled\" ng-class=\"{\'btn-default-focus\':$select.focus}\"><span tabindex=\"-1\" class=\"btn btn-default form-control ui-select-toggle\" aria-label=\"{{ $select.baseTitle }} activate\" ng-disabled=\"$select.disabled\" ng-click=\"$select.activate()\" style=\"outline: 0;\"><span ng-show=\"$select.isEmpty()\" class=\"ui-select-placeholder text-muted\">{{$select.placeholder}}</span> <span ng-hide=\"$select.isEmpty()\" class=\"ui-select-match-text pull-left\" ng-class=\"{\'ui-select-allow-clear\': $select.allowClear && !$select.isEmpty()}\" ng-transclude=\"\"></span> <i class=\"caret pull-right\" ng-click=\"$select.toggle($event)\"></i> <a ng-show=\"$select.allowClear && !$select.isEmpty()\" aria-label=\"{{ $select.baseTitle }} clear\" style=\"margin-right: 10px\" ng-click=\"$select.clear($event)\" class=\"btn btn-xs btn-link pull-right\"><i class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></i></a></span></div>");
-$templateCache.put("bootstrap/select.tpl.html","<div class=\"ui-select-container ui-select-bootstrap dropdown\" ng-class=\"{open: $select.open}\"><div class=\"ui-select-match\"></div><input type=\"text\" autocomplete=\"off\" tabindex=\"-1\" aria-expanded=\"true\" aria-label=\"{{ $select.baseTitle }}\" aria-owns=\"ui-select-choices-{{ $select.generatedId }}\" aria-activedescendant=\"ui-select-choices-row-{{ $select.generatedId }}-{{ $select.activeIndex }}\" class=\"form-control ui-select-search\" placeholder=\"{{$select.placeholder}}\" ng-model=\"$select.search\" ng-show=\"$select.open\"><div class=\"ui-select-choices\"></div></div>");}]);

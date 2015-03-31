@@ -1,22 +1,17 @@
 # a palette
-angular.module('colorBrewer').directive 'palettePicker', (colorBrewer) ->
+angular.module('colorBrewer').directive 'palettePicker', (palettes) ->
   restrict: 'E'
   scope: {}
   templateUrl: 'templates/palette-picker.html'
   link: (scope) ->
-    scope.palettes = colorBrewer
+    scope.palettes = palettes
     scope.range = 9
-    scope.refreshPalettes = (range) ->
-      scope.palettes = colorBrewer
+    scope.refreshPalettes = (range, reverse) ->
+      scope.palettes = palettes
         .filter (palette) ->
           palette.range[range]?
         .map (palette) ->
           palette.range[range]
-
- angular.module('colorBrewer').filter 'cbExist', ->
-      (colorBrewer, range) ->
-        out = []
-        for palette in colorBrewer
-          if palette.range[range]?
-            out.push palette
-        return out
+    scope.reversePalettes = (reverse) ->
+        scope.palettes.map (palette) ->
+          palette.reverse()

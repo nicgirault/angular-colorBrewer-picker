@@ -1,0 +1,13 @@
+.ui-select-container.ui-select-bootstrap.dropdown(ng-class='{open: $select.open}')
+  .ui-select-match
+  table
+    tr
+      td.range-cell
+        input.ui-select-range(type='range', min='3', max='12', step='1', ng-model='$select.search', ng-show='$select.open')
+      td.onoffswitch-cell
+        .onoffswitch(ng-show='$select.open')
+          input#myonoffswitch.ui-select-reverse.onoffswitch-checkbox(type='checkbox', name='onoffswitch', ng-model='$select.reverse')
+          label.onoffswitch-label(for='myonoffswitch')
+            span.onoffswitch-inner
+            span.onoffswitch-switch
+  .ui-select-choices
