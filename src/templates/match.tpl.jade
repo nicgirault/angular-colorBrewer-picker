@@ -1,0 +1,7 @@
+.ui-select-match(ng-hide='$select.open', ng-disabled='$select.disabled', ng-class="{'btn-default-focus':$select.focus}")
+  span.btn.btn-default.form-control.ui-select-toggle(tabindex='-1', aria-label='{{ $select.baseTitle }} activate', ng-disabled='$select.disabled', ng-click='$select.activate()', style='outline: 0;')
+    span.ui-select-placeholder.text-muted(ng-show='$select.isEmpty()') {{$select.placeholder}}
+    span.ui-select-match-text.pull-left(ng-hide='$select.isEmpty()', ng-class="{'ui-select-allow-clear': $select.allowClear && !$select.isEmpty()}", ng-transclude='')
+    i.caret.pull-right(ng-click='$select.toggle($event)')
+    a.btn.btn-xs.btn-link.pull-right(ng-show='$select.allowClear && !$select.isEmpty()', aria-label='{{ $select.baseTitle }} clear', style='margin-right: 10px', ng-click='$select.clear($event)')
+      i.glyphicon.glyphicon-remove(aria-hidden='true')

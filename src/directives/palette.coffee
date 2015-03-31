@@ -1,5 +1,5 @@
 # a palette
-angular.module('colorBrewer').directive 'palette', (colorBrewer) ->
+angular.module('colorBrewer').directive 'palette', ->
   restrict: 'E'
   scope:
     palette: '=colors'

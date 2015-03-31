@@ -1,27 +1,75 @@
+var fs = require('fs');
 var gulp = require('gulp');
-var less = require('gulp-less')
-var coffee = require('gulp-coffee');
-var browserify = require('gulp-browserify');
+var concat = require('gulp-concat');
 var rename = require('gulp-rename');
-var jade = require('gulp-jade');
+var es = require('event-stream');
+var del = require('del');
+var uglify = require('gulp-uglify');
+var minifyHtml = require('gulp-minify-html');
+var minifyCss = require('gulp-minify-css');
+var templateCache = require('gulp-angular-templatecache');
+var gutil = require('gulp-util');
+var plumber = require('gulp-plumber');//To prevent pipe breaking caused by errors at 'watch'
+var coffee = require('gulp-coffee')
+var jade = require('gulp-jade')
 
-gulp.task('coffee', function(){
-  gulp.src('src/**/*.coffee')
-  .pipe(coffee({bare: true}))
-  .pipe(gulp.dest('build'))
+gulp.task('watch', ['build'], function() {
+  gulp.watch(['src/**/*.{js,html}'], ['build']);
 });
 
-gulp.task('browserify', ['coffee'], function() {
-  gulp.src('build/module.js')
-  .pipe(browserify())
-  .pipe(rename('colorBrewer.js'))
-  .pipe(gulp.dest('dist'))
+gulp.task('clean', function(cb) {
+  del(['dist', 'build'], cb);
 });
 
-gulp.task('jade', function() {
-  gulp.src('src/**/*.jade')
-  .pipe(jade())
-  .pipe(gulp.dest('demo'))
+gulp.task('coffee', function() {
+  return gulp.src(['src/module.coffee', 'src/services/*.coffee', 'src/directives/*.coffee'])
+    .pipe(concat('tmp.coffee'))
+    .pipe(coffee({bare: true}))
+    .pipe(gulp.dest('build'));
 });
 
-gulp.task('build', [ 'browserify', 'jade']);
+gulp.task('build', ['clean', 'coffee'], function() {
+
+  var buildTemplates = function () {
+    return gulp.src('src/templates/*.jade')
+      .pipe(jade())
+      .pipe(minifyHtml({
+             empty: true,
+             spare: true,
+             quotes: true
+            }))
+      .pipe(templateCache({module: 'colorBrewer'}));
+  };
+
+  var buildLib = function(){
+    return gulp.src(['build/tmp.js', 'src/ui-select/select.js'])
+      .pipe(concat('select_without_templates.js'))
+  };
+
+  return es.merge(buildLib(), buildTemplates())
+    .pipe(plumber({
+      errorHandler: handleError
+    }))
+    .pipe(concat('angular-color-brewer-picker.js'))
+    .pipe(gulp.dest('dist'))
+    .pipe(uglify())
+    .pipe(rename('angular-color-brewer-picker.min.js'))
+    .pipe(gulp.dest('dist'));
+
+});
+
+gulp.task('style', function(){
+  return gulp.src(['src/style.css'])
+    .pipe(rename('angular-color-brewer-picker.css'))
+    .pipe(gulp.dest('dist'))
+    .pipe(minifyCss())
+    .pipe(rename('angular-color-brewer-picker.min.css'))
+    .pipe(gulp.dest('dist'));
+});
+
+gulp.task('default', ['build', 'style']);
+
+var handleError = function (err) {
+  console.log(err.toString());
+  this.emit('end');
+};
