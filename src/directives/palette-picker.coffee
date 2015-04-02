@@ -1,22 +1,54 @@
 # a palette
-angular.module('colorBrewer').directive 'palettePicker', (colorBrewer) ->
+angular.module('colorBrewer').directive 'palettePicker', [ 'palettes', (palettes) ->
   restrict: 'E'
-  scope: {}
-  templateUrl: 'templates/palette-picker.html'
+  scope:
+    initialPalette: '@'
+    initialName: '@'
+    initialRange: '@'
+    initialReverse: '='
+    onSelect: '&'
+  templateUrl: 'palette-picker.html'
   link: (scope) ->
-    scope.palettes = colorBrewer
-    scope.range = 9
+    palettes = angular.copy palettes
+    if scope.initialReverse
+      palettes.map (paletteCluster) ->
+        for range, palette of paletteCluster.range
+          palette.reverse()
+
+    initialRange = scope.initialRange || 9
+    scope.palettes = palettes
+      .filter (palette) ->
+        palette.range[initialRange]?
+      .map (palette) ->
+        name: palette.name
+        colors: palette.range[initialRange]
+
+
+
+
+    palette = palettes.find (palette) ->
+      palette.name == scope.initialName
+
+    if palette
+      scope.selectedPalette = {name: palette.name, colors: palette.range[initialRange]}
+    else
+      {name: null, colors: []}
+
+    scope.range = initialRange
+
     scope.refreshPalettes = (range) ->
-      scope.palettes = colorBrewer
+      scope.palettes = palettes
         .filter (palette) ->
           palette.range[range]?
         .map (palette) ->
-          palette.range[range]
+          name: palette.name
+          colors: palette.range[range]
 
- angular.module('colorBrewer').filter 'cbExist', ->
-      (colorBrewer, range) ->
-        out = []
-        for palette in colorBrewer
-          if palette.range[range]?
-            out.push palette
-        return out
+    scope.reversePalettes = ->
+      palettes.map (paletteCluster) ->
+        for range, palette of paletteCluster.range
+          palette.reverse()
+
+    scope.selectCallback = (item, isReverse) ->
+      scope.onSelect({item: item, isReverse: isReverse})
+]
