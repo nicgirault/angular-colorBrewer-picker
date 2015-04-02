@@ -13,8 +13,8 @@ var plumber = require('gulp-plumber');//To prevent pipe breaking caused by error
 var coffee = require('gulp-coffee')
 var jade = require('gulp-jade')
 
-gulp.task('watch', ['build'], function() {
-  gulp.watch(['src/**/*.{js,html}'], ['build']);
+gulp.task('watch', ['style'], function() {
+  gulp.watch(['src/**/*.{js,jade,coffee,css}'], ['style']);
 });
 
 gulp.task('clean', function(cb) {
@@ -58,7 +58,7 @@ gulp.task('build', ['clean', 'coffee'], function() {
 
 });
 
-gulp.task('style', function(){
+gulp.task('style', ['build'], function(){
   return gulp.src(['src/style.css'])
     .pipe(rename('angular-color-brewer-picker.css'))
     .pipe(gulp.dest('dist'))
@@ -67,7 +67,7 @@ gulp.task('style', function(){
     .pipe(gulp.dest('dist'));
 });
 
-gulp.task('default', ['build', 'style']);
+gulp.task('default', ['style']);
 
 var handleError = function (err) {
   console.log(err.toString());

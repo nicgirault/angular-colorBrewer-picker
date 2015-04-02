@@ -1,22 +1,38 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="demo">
-<head>
-  <meta charset="utf-8">
-  <title>Color Brewer Picker</title>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Color Brewer Picker</title>
 
-  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular.js"></script>
-  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular-sanitize.js"></script>
-  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.css">
+    <script src="../bower_components/angular/angular.min.js"></script>
+    <script src="../bower_components/angular-sanitize/angular-sanitize.min.js"></script>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css">
 
-  <!-- ui-select files -->
-  <script src="../dist/angular-color-brewer-picker.js"></script>
-  <link rel="stylesheet" href="../dist/angular-color-brewer-picker.css">
+    <!-- ui-select files -->
+    <script src="../dist/angular-color-brewer-picker.js"></script>
+    <link rel="stylesheet" href="../dist/angular-color-brewer-picker.min.css">
 
-  <script src="demo.js"></script>
+    <script>
+      var app = angular.module('demo', ['colorBrewer']);
+      app.controller('demoCtrl', function($scope) {
+        $scope.onSelect = function(item, isReverse){
+          console.log(item, isReverse);
+          console.log(isReverse);
+        };
+      });
+    </script>
+  </head>
 
-</head>
-
-<body ng-controller="DemoCtrl">
-  <palette-picker />
-</body>
+  <body ng-app="demo">
+    <div ng-controller="demoCtrl">
+      <div>
+        <palette-picker
+          initial-name='Blues'
+          initial-range='4'
+          initial-reverse='false'
+          on-select='onSelect(item, isReverse)'
+        />
+      </div>
+    </div>
+  </body>
 </html>

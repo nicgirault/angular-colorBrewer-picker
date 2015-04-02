@@ -411,29 +411,89 @@ angular.module('colorBrewer').factory('palettes', function() {
   ];
 });
 
-angular.module('colorBrewer').directive('palettePicker', function(palettes) {
-  return {
-    restrict: 'E',
-    scope: {},
-    templateUrl: 'templates/palette-picker.html',
-    link: function(scope) {
-      scope.palettes = palettes;
-      scope.range = 9;
-      scope.refreshPalettes = function(range, reverse) {
-        return scope.palettes = palettes.filter(function(palette) {
-          return palette.range[range] != null;
+angular.module('colorBrewer').directive('palettePicker', [
+  'palettes', function(palettes) {
+    return {
+      restrict: 'E',
+      scope: {
+        initialPalette: '@',
+        initialName: '@',
+        initialRange: '@',
+        initialReverse: '=',
+        onSelect: '&'
+      },
+      templateUrl: 'palette-picker.html',
+      link: function(scope) {
+        var initialRange, palette;
+        palettes = angular.copy(palettes);
+        if (scope.initialReverse) {
+          palettes.map(function(paletteCluster) {
+            var palette, range, ref, results;
+            ref = paletteCluster.range;
+            results = [];
+            for (range in ref) {
+              palette = ref[range];
+              results.push(palette.reverse());
+            }
+            return results;
+          });
+        }
+        initialRange = scope.initialRange || 9;
+        scope.palettes = palettes.filter(function(palette) {
+          return palette.range[initialRange] != null;
         }).map(function(palette) {
-          return palette.range[range];
+          return {
+            name: palette.name,
+            colors: palette.range[initialRange]
+          };
         });
-      };
-      return scope.reversePalettes = function(reverse) {
-        return scope.palettes.map(function(palette) {
-          return palette.reverse();
+        palette = palettes.find(function(palette) {
+          return palette.name === scope.initialName;
         });
-      };
-    }
-  };
-});
+        if (palette) {
+          scope.selectedPalette = {
+            name: palette.name,
+            colors: palette.range[initialRange]
+          };
+        } else {
+          ({
+            name: null,
+            colors: []
+          });
+        }
+        scope.range = initialRange;
+        scope.refreshPalettes = function(range) {
+          return scope.palettes = palettes.filter(function(palette) {
+            return palette.range[range] != null;
+          }).map(function(palette) {
+            return {
+              name: palette.name,
+              colors: palette.range[range]
+            };
+          });
+        };
+        scope.reversePalettes = function() {
+          return palettes.map(function(paletteCluster) {
+            var range, ref, results;
+            ref = paletteCluster.range;
+            results = [];
+            for (range in ref) {
+              palette = ref[range];
+              results.push(palette.reverse());
+            }
+            return results;
+          });
+        };
+        return scope.selectCallback = function(item, isReverse) {
+          return scope.onSelect({
+            item: item,
+            isReverse: isReverse
+          });
+        };
+      }
+    };
+  }
+]);
 
 angular.module('colorBrewer').directive('palette', function() {
   return {
@@ -442,7 +502,7 @@ angular.module('colorBrewer').directive('palette', function() {
       palette: '=colors',
       size: '@size'
     },
-    templateUrl: 'templates/palette.html'
+    templateUrl: 'palette.html'
   };
 });
 
@@ -452,6 +512,30 @@ angular.module('colorBrewer').directive('palette', function() {
  * Version: 0.11.2 - 2015-03-17T04:08:46.474Z
  * License: MIT
  */
+
+ if (!Array.prototype.find) {
+   Array.prototype.find = function(predicate) {
+     if (this == null) {
+       throw new TypeError('Array.prototype.find called on null or undefined');
+     }
+     if (typeof predicate !== 'function') {
+       throw new TypeError('predicate must be a function');
+     }
+     var list = Object(this);
+     var length = list.length >>> 0;
+     var thisArg = arguments[1];
+     var value;
+
+     for (var i = 0; i < length; i++) {
+       value = list[i];
+       if (predicate.call(thisArg, value, i, list)) {
+         return value;
+       }
+     }
+     return undefined;
+   };
+ }
+
 
 if (angular.element.prototype.querySelectorAll === undefined) {
   angular.element.prototype.querySelectorAll = function(selector) {
@@ -547,6 +631,8 @@ uis.directive('uiSelectChoices',
           $select.reversePalettes(attrs.reverse);
         });
 
+        $select.selectCallback = attrs.sellectCallback;
+        $select.search = attrs.initialRange;
       };
     }
   };
@@ -561,14 +647,11 @@ uis.directive('uiSelectChoices',
 uis.controller('uiSelectCtrl',
   ['$scope', '$element', '$timeout', '$filter', 'uisRepeatParser', 'uiSelectConfig',
   function($scope, $element, $timeout, $filter, RepeatParser, uiSelectConfig) {
-
   var ctrl = this;
-  var EMPTY_SEARCH = 3;
 
   ctrl.placeholder = uiSelectConfig.placeholder;
 
   ctrl.closeOnSelect = true; //Initialized inside uiSelect directive link function
-  ctrl.search = EMPTY_SEARCH;
   ctrl.reverse = false;
 
   ctrl.activeIndex = 0; //Dropdown of choices
@@ -732,7 +815,7 @@ uis.controller('uiSelectCtrl',
         $timeout(function(){
           ctrl.onSelectCallback($scope, {
             $item: item,
-            $model: ctrl.parserResult.modelMapper($scope, locals)
+            isReverse: ctrl.reverse
           });
         });
 
@@ -806,10 +889,8 @@ uis.directive('uiSelect',
       tElement.append("<ui-select-single/>");
 
       return function(scope, element, attrs, ctrls, transcludeFn) {
-
         var $select = ctrls[0];
         var ngModel = ctrls[1];
-
         $select.generatedId = uiSelectConfig.generateId();
         $select.baseTitle = attrs.title || 'Select box';
         $select.focusserTitle = $select.baseTitle + ' focus';
@@ -1123,6 +1204,6 @@ uis.service('uisRepeatParser', ['$parse', function($parse) {
 
 angular.module("colorBrewer").run(["$templateCache", function($templateCache) {$templateCache.put("choices.tpl.html","<ul role=\"listbox\" ng-show=\"$select.items.length &gt; 0\" class=\"ui-select-choices ui-select-choices-content dropdown-menu\"><li id=\"ui-select-choices-{{ $select.generatedId }}\" class=\"ui-select-choices-group\"><div ng-show=\"$select.isGrouped &amp;&amp; $index &gt; 0\" class=\"divider\"></div><div ng-show=\"$select.isGrouped\" ng-bind=\"$group.name\" class=\"ui-select-choices-group-label dropdown-header\"></div><div id=\"ui-select-choices-row-{{ $select.generatedId }}-{{$index}}\" ng-class=\"{active: $select.isActive(this), disabled: $select.isDisabled(this)}\" role=\"option\" class=\"ui-select-choices-row\"><a href=\"javascript:void(0)\" class=\"ui-select-choices-row-inner\"></a></div></li></ul>");
 $templateCache.put("match.tpl.html","<div ng-hide=\"$select.open\" ng-disabled=\"$select.disabled\" ng-class=\"{\'btn-default-focus\':$select.focus}\" class=\"ui-select-match\"><span tabindex=\"-1\" aria-label=\"{{ $select.baseTitle }} activate\" ng-disabled=\"$select.disabled\" ng-click=\"$select.activate()\" style=\"outline: 0;\" class=\"btn btn-default form-control ui-select-toggle\"><span ng-show=\"$select.isEmpty()\" class=\"ui-select-placeholder text-muted\">{{$select.placeholder}}</span><span ng-hide=\"$select.isEmpty()\" ng-class=\"{\'ui-select-allow-clear\': $select.allowClear &amp;&amp; !$select.isEmpty()}\" ng-transclude=\"\" class=\"ui-select-match-text pull-left\"></span><i ng-click=\"$select.toggle($event)\" class=\"caret pull-right\"></i><a ng-show=\"$select.allowClear &amp;&amp; !$select.isEmpty()\" aria-label=\"{{ $select.baseTitle }} clear\" style=\"margin-right: 10px\" ng-click=\"$select.clear($event)\" class=\"btn btn-xs btn-link pull-right\"><i aria-hidden=\"true\" class=\"glyphicon glyphicon-remove\"></i></a></span></div>");
-$templateCache.put("palette-picker.html","<ui-select ng-model=\"selectedPalette\" style=\"width: 257px;\"><ui-select-match placeholder=\"Select a palette...\"><palette colors=\"selectedPalette\" size=\"20\"></palette></ui-select-match><ui-select-choices repeat=\"palette in palettes\" refresh=\"refreshPalettes($select.search)\" reverse=\"reversePalettes($select.reverse)\"><palette colors=\"palette\" size=\"20\"></palette></ui-select-choices></ui-select>");
+$templateCache.put("palette-picker.html","<ui-select ng-model=\"selectedPalette\" style=\"width: 257px;\" on-select=\"selectCallback($item, isReverse)\"><ui-select-match placeholder=\"Select a palette...\"><palette colors=\"selectedPalette.colors\" size=\"20\"></palette></ui-select-match><ui-select-choices repeat=\"palette in palettes\" refresh=\"refreshPalettes($select.search)\" reverse=\"reversePalettes($select.reverse)\" initial-range=\"{{ range }}\" initial-reverse=\"{{ reverse }}\"><palette colors=\"palette.colors\" size=\"20\"></palette></ui-select-choices></ui-select>");
 $templateCache.put("palette.html","<svg ng-if=\"palette\" ng-attr-width=\"{{ size * palette.length }}\" ng-attr-height=\"{{ size }}\"><rect ng-repeat=\"color in palette\" ng-attr-fill=\"{{ color }}\" ng-attr-width=\"{{ size }}\" ng-attr-height=\"{{ size }}\" ng-attr-x=\"{{ $index * size }}\" ng-attr-y=\"{{ 0 }}\" title=\"{{ color }}\"></rect></svg>");
 $templateCache.put("select.tpl.html","<div ng-class=\"{open: $select.open}\" class=\"ui-select-container ui-select-bootstrap dropdown\"><div class=\"ui-select-match\"></div><table><tr><td class=\"range-cell\"><input type=\"range\" min=\"3\" max=\"12\" step=\"1\" ng-model=\"$select.search\" ng-show=\"$select.open\" class=\"ui-select-range\"></td><td class=\"onoffswitch-cell\"><div ng-show=\"$select.open\" class=\"onoffswitch\"><input id=\"myonoffswitch\" type=\"checkbox\" name=\"onoffswitch\" ng-model=\"$select.reverse\" class=\"ui-select-reverse onoffswitch-checkbox\"><label for=\"myonoffswitch\" class=\"onoffswitch-label\"><span class=\"onoffswitch-inner\"></span><span class=\"onoffswitch-switch\"></span></label></div></td></tr></table><div class=\"ui-select-choices\"></div></div>");}]);

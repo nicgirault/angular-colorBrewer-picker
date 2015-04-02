@@ -5,6 +5,30 @@
  * License: MIT
  */
 
+ if (!Array.prototype.find) {
+   Array.prototype.find = function(predicate) {
+     if (this == null) {
+       throw new TypeError('Array.prototype.find called on null or undefined');
+     }
+     if (typeof predicate !== 'function') {
+       throw new TypeError('predicate must be a function');
+     }
+     var list = Object(this);
+     var length = list.length >>> 0;
+     var thisArg = arguments[1];
+     var value;
+
+     for (var i = 0; i < length; i++) {
+       value = list[i];
+       if (predicate.call(thisArg, value, i, list)) {
+         return value;
+       }
+     }
+     return undefined;
+   };
+ }
+
+
 if (angular.element.prototype.querySelectorAll === undefined) {
   angular.element.prototype.querySelectorAll = function(selector) {
     return angular.element(this[0].querySelectorAll(selector));
@@ -99,6 +123,8 @@ uis.directive('uiSelectChoices',
           $select.reversePalettes(attrs.reverse);
         });
 
+        $select.selectCallback = attrs.sellectCallback;
+        $select.search = attrs.initialRange;
       };
     }
   };
@@ -113,14 +139,11 @@ uis.directive('uiSelectChoices',
 uis.controller('uiSelectCtrl',
   ['$scope', '$element', '$timeout', '$filter', 'uisRepeatParser', 'uiSelectConfig',
   function($scope, $element, $timeout, $filter, RepeatParser, uiSelectConfig) {
-
   var ctrl = this;
-  var EMPTY_SEARCH = 3;
 
   ctrl.placeholder = uiSelectConfig.placeholder;
 
   ctrl.closeOnSelect = true; //Initialized inside uiSelect directive link function
-  ctrl.search = EMPTY_SEARCH;
   ctrl.reverse = false;
 
   ctrl.activeIndex = 0; //Dropdown of choices
@@ -284,7 +307,7 @@ uis.controller('uiSelectCtrl',
         $timeout(function(){
           ctrl.onSelectCallback($scope, {
             $item: item,
-            $model: ctrl.parserResult.modelMapper($scope, locals)
+            isReverse: ctrl.reverse
           });
         });
 
@@ -358,10 +381,8 @@ uis.directive('uiSelect',
       tElement.append("<ui-select-single/>");
 
       return function(scope, element, attrs, ctrls, transcludeFn) {
-
         var $select = ctrls[0];
         var ngModel = ctrls[1];
-
         $select.generatedId = uiSelectConfig.generateId();
         $select.baseTitle = attrs.title || 'Select box';
         $select.focusserTitle = $select.baseTitle + ' focus';
