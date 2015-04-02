@@ -25,14 +25,12 @@ angular.module('colorBrewer').directive 'palettePicker', [ 'palettes', (palettes
 
 
 
+    scope.selectedPalette = {name: null, colors: []}
+    for palette in palettes
+      if palette.name == scope.initialName
+        scope.selectedPalette = {name: palette.name, colors: palette.range[initialRange]}
+        break
 
-    palette = palettes.find (palette) ->
-      palette.name == scope.initialName
-
-    if palette
-      scope.selectedPalette = {name: palette.name, colors: palette.range[initialRange]}
-    else
-      {name: null, colors: []}
 
     scope.range = initialRange
 
