@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="demo">
-<head>
-  <meta charset="utf-8">
-  <title>Color Brewer Picker</title>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Color Brewer Picker</title>
 
     <script src="../bower_components/angular/angular.min.js"></script>
     <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css">
@@ -18,9 +18,17 @@
       });
     </script>
   </head>
-</head>
 
-<body ng-controller="DemoCtrl">
-  <palette-picker />
-</body>
+  <body ng-app="demo">
+    <div ng-controller="demoCtrl">
+      <div>
+        <palette-picker
+          initial-name='Blues'
+          initial-range='4'
+          initial-reverse='false'
+          on-select='onSelect(item, isReverse)'
+        />
+      </div>
+    </div>
+  </body>
 </html>

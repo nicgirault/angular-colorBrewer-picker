@@ -4,4 +4,4 @@ angular.module('colorBrewer').directive 'palette', ->
   scope:
     palette: '=colors'
     size: '@size'
-  templateUrl: 'templates/palette.html'
+  templateUrl: 'palette.html'
