@@ -4,20 +4,20 @@
   <meta charset="utf-8">
   <title>Color Brewer Picker</title>
 
-  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular.js"></script>
-  <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular-sanitize.js"></script>
-  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.css">
+    <script src="../bower_components/angular/angular.min.js"></script>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <script src="../dist/angular-color-brewer-picker.min.js"></script>
+    <link rel="stylesheet" href="../dist/angular-color-brewer-picker.min.css">
 
-  <!-- ui-select files -->
-  <script src="../bower_components/angular-ui-select/dist/select.js"></script>
-  <link rel="stylesheet" href="../bower_components/angular-ui-select/dist/select.css">
-  <script src="../dist/colorBrewer.js"></script>
-
-  <script src="demo.js"></script>
-
-  <!-- Select2 theme -->
-  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/select2/3.4.5/select2.css">
-  <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.8.5/css/selectize.default.css">
+    <script>
+      var app = angular.module('demo', ['colorBrewer']);
+      app.controller('demoCtrl', function($scope) {
+        $scope.onSelect = function(item, isReverse){
+          console.log(item, isReverse);
+        };
+      });
+    </script>
+  </head>
 </head>
 
 <body ng-controller="DemoCtrl">
