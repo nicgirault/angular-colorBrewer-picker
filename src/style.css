@@ -1,3 +1,14 @@
+palette-picker ul {
+  padding-left: 0;
+}
+
+palette-picker tr, palette-picker td {
+  border-top: none;
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
+}
+
 .ui-select-highlight {
   font-weight: bold;
 }
