@@ -167,14 +167,16 @@ body > .ui-select-bootstrap.open {
   padding: 5px;
 }
 .ui-select-bootstrap .onoffswitch-cell {
-  width: 30%;
+  width: 10%;
 }
 .ui-select-bootstrap .range-cell {
-  width: 70%;
+  width: 90%;
 }
 
+
 .ui-select-bootstrap .onoffswitch {
-    position: relative; width: 68px;
+    margin-top: 3px;
+    position: relative; width: 30px;
     -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
 }
 .ui-select-bootstrap .onoffswitch-checkbox {
@@ -182,36 +184,36 @@ body > .ui-select-bootstrap.open {
 }
 .ui-select-bootstrap .onoffswitch-label {
     display: block; overflow: hidden; cursor: pointer;
-    border: 2px solid #999999; border-radius: 4px;
+    border: 2px solid #999999; border-radius: 2px;
 }
 .ui-select-bootstrap .onoffswitch-inner {
     display: block; width: 200%; margin-left: -100%;
-    -moz-transition: margin 0.3s ease-in 0s; -webkit-transition: margin 0.3s ease-in 0s;
-    -o-transition: margin 0.3s ease-in 0s; transition: margin 0.3s ease-in 0s;
+    -moz-transition: margin 0.1s; -webkit-transition: margin 0.1s;
+    -o-transition: margin 0.1s; transition: margin 0.1s;
 }
-.ui-select-bootstrap .onoffswitch-inner:before, .ui-select-bootstrap .onoffswitch-inner:after {
-    display: block; float: left; width: 50%; height: 30px; padding: 0; line-height: 30px;
+.ui-select-bootstrap .onoffswitch-inner:before, .onoffswitch-inner:after {
+    display: block; float: left; width: 50%; height: 5px; padding: 0; line-height: 5px;
     font-size: 14px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
     -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
 }
 .ui-select-bootstrap .onoffswitch-inner:before {
-    content: ">>>";
+    content: "";
     padding-left: 10px;
-    background-color: #D3D3D3; color: #999999;
+    background-color: #999999; color: #EEEEEE;
 }
 .ui-select-bootstrap .onoffswitch-inner:after {
-    content: "<<<";
+    content: "";
     padding-right: 10px;
     background-color: #EEEEEE; color: #999999;
     text-align: right;
 }
 .ui-select-bootstrap .onoffswitch-switch {
-    display: block; width: 18px; margin: 6px;
+    display: block; width: 10px; margin: -2.5px;
     background: #FFFFFF;
-    border: 2px solid #999999; border-radius: 4px;
-    position: absolute; top: 0; bottom: 0; right: 34px;
-    -moz-transition: all 0.3s ease-in 0s; -webkit-transition: all 0.3s ease-in 0s;
-    -o-transition: all 0.3s ease-in 0s; transition: all 0.3s ease-in 0s;
+    border: 2px solid #999999; border-radius: 2px;
+    position: absolute; top: 0; bottom: 0; right: 21px;
+    -moz-transition: all 0.1s; -webkit-transition: all 0.1s;
+    -o-transition: all 0.1s; transition: all 0.1s;
 }
 .ui-select-bootstrap .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
     margin-left: 0;
