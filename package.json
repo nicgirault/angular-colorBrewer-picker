@@ -1,5 +1,19 @@
 {
   "name": "angular-colorBrewer-selector",
+  "description": "a stand alone angular directive to select a color brewer palette",
+  "version": "0.0.4",
+  "homepage": "https://github.com/nicgirault/angular-colorBrewer-selector",
+  "authors": [
+    "nicgirault <nic.girault@gmail.com>"
+  ],
+  "keywords": [
+    "selector",
+    "color",
+    "picker",
+    "colorpicker",
+    "color brewer",
+    "angular"
+  ],
   "dependencies": {
     "coffee-script": "^1.8.0",
     "del": "^1.1.1",
@@ -22,5 +36,10 @@
   },
   "devDependencies": {
     "gulp-minify-css": "^1.0.0"
-  }
+  },
+  "license": "MIT",
+  "main": [
+    "dist/angular-color-brewer-picker.min.css",
+    "dist/angular-color-brewer-picker.min.js"
+  ]
 }

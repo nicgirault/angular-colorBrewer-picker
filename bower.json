@@ -1,9 +1,18 @@
 {
   "name": "angular-colorBrewer-selector",
-  "version": "0.0.3",
+  "description": "a stand alone angular directive to select a color brewer palette",
+  "version": "0.0.4",
   "homepage": "https://github.com/nicgirault/angular-colorBrewer-selector",
   "authors": [
-    "Nico <nic.girault@gmail.com>"
+    "nicgirault <nic.girault@gmail.com>"
+  ],
+  "keywords": [
+    "selector",
+    "color",
+    "picker",
+    "colorpicker",
+    "color brewer",
+    "angular"
   ],
   "license": "MIT",
   "ignore": [
